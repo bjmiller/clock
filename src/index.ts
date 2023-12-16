@@ -23,7 +23,6 @@ app.whenReady().then(() => {
   const listener: WatchListener<string> = () => {
     if (!reloading) {
       reloading = true;
-      console.log('reloading...');
       win.reload();
       setTimeout(() => {
         reloading = false;
