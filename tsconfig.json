@@ -3,13 +3,11 @@
     "target": "ES6",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true,
     "module": "CommonJS",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
-    "noEmit": true
+    "moduleResolution": "Node",
   },
   "include": [
     "src",

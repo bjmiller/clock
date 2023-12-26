@@ -50,6 +50,7 @@ const pageConfig: webpack.Configuration = {
       }
     ]
   },
+  resolve: { extensions: ['', '.ts', '.js', '...'] },
   output: {
     path: resolve(__dirname, 'dist'),
     filename: 'main.js'
