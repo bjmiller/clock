@@ -90,7 +90,12 @@
       }
     ],
     "no-console": [
-      "warn"
+      "warn",
+      {
+        "allow": [
+          "error"
+        ]
+      }
     ],
     "no-duplicate-imports": [
       "error"

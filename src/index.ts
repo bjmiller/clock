@@ -18,7 +18,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   const win = createWindow();
 
-  const debouncePeriod = 500;
+  const debouncePeriod = 750;
   let reloading = false;
   const listener: WatchListener<string> = () => {
     if (!reloading) {

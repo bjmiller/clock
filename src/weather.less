@@ -1,0 +1,86 @@
+#weather {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    flex: 0 1 50%;
+  }
+}
+
+#wx-current {
+  display: flex;
+
+  > * {
+    flex: 1 0;
+    // border: solid 1px rebeccapurple;
+  }
+}
+
+#wx-current-temp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #aaa;
+
+  > * {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+#wx-current-temp-readout {
+  font-size: 80px;
+}
+
+#wx-current-temp-feelslike {
+  font-size: 50px;
+  color: #777;
+}
+
+#wx-current-condition {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #aaa;
+
+  > * {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+#wx-current-icon > img {
+  max-width: 100px;
+}
+
+#wx-current-description,
+#wx-current-hi-lo {
+  font-size: 32px;
+}
+
+#wx-forecast {
+  display: flex;
+  color: #aaa;
+
+  > * {
+    flex: 1 0;
+    // border: solid 1px yellow;
+  }
+}
+
+.wx-forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 15px;
+}
+
+.wx-forecast-icon > img {
+  width: 80px;
+}
+
+.wx-forecast-phrase,
+.wx-forecast-temp,
+.wx-forecast-name {
+  font-size: 20px;
+}

@@ -47,10 +47,14 @@ const pageConfig: webpack.Configuration = {
         test: /\.less$/,
         include: /src/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
+      },
+      {
+        test: /\.svg$/,
+        type: 'asset/inline'
       }
     ]
   },
-  resolve: { extensions: ['', '.ts', '.js', '...'] },
+  resolve: { extensions: ['', '.ts', '.js', '.svg', '...'] },
   output: {
     path: resolve(__dirname, 'dist'),
     filename: 'main.js'

@@ -11,6 +11,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@types/webpack": "^5.28.5",
+    "@types/webpack-env": "^1.18.4",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "css-loader": "^6.8.1",
