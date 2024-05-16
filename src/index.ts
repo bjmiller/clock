@@ -11,7 +11,7 @@ const createWindow = () => {
     frame: false
   });
 
-  win.loadFile('./dist/index.html');
+  win.loadFile(`${__dirname}/index.html`);
   return win;
 };
 

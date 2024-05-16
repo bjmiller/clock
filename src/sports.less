@@ -1,0 +1,62 @@
+@sports-lead-font-size: 44px;
+
+#sports-schedule {
+  width: 100%;
+  font-size: @sports-lead-font-size;
+  border-collapse: collapse;
+
+  tbody > tr:first-child > * {
+    padding-block-start: 22px;
+    padding-block-end: 6px;
+    line-height: @sports-lead-font-size;
+  }
+
+  tbody > tr:last-child > * {
+    line-height: 36px;
+    padding-block-start: 16px;
+    padding-block-end: 6px;
+  }
+
+  td {
+    padding: 0 10px;
+
+    &.sports-teams {
+      color: #aaa;
+      font-size: 60px;
+    }
+
+    &.sports-time {
+      font-size: 36px;
+      color: #aaa;
+      min-width: 45%;
+      white-space: nowrap;
+    }
+
+    &.sports-networks {
+      font-size: 36px;
+      color: #777;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+
+    & > span.team.nyi {
+      text-decoration: underline;
+      text-decoration-color: #f26924;
+      text-underline-offset: 6px;
+    }
+
+    & > span.team.nyr {
+      text-decoration: underline;
+      text-decoration-color: #c32032;
+      text-underline-offset: 6px;
+    }
+
+    & > span.team.nym {
+      text-decoration: underline;
+      text-decoration-color: #002d72;
+      text-underline-offset: 6px;
+    }
+  }
+}
