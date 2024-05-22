@@ -31,4 +31,10 @@ app.whenReady().then(() => {
   };
 
   watch('./dist/index.html', listener);
+
+  win.setKiosk(true);
+  win.webContents.on('render-process-gone', () => {
+    app.relaunch();
+    app.quit();
+  });
 });
