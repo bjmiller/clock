@@ -8,10 +8,12 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width,
     height,
-    frame: false
+    frame: false,
+    fullscreen: true
   });
 
   win.loadFile(`${__dirname}/index.html`);
+  win.focus();
   return win;
 };
 
