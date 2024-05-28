@@ -13,8 +13,8 @@ const writeTime = () => {
   if (timespan && timespan.innerHTML !== currentTime) {
     timespan.innerHTML = `${pad}${currentTime}`;
   }
-  if (periodspan && periodspan.innerHTML !== period) {
-    periodspan.innerHTML = period;
+  if (periodspan && periodspan.innerHTML !== period.slice(0, 1)) {
+    periodspan.innerHTML = period.slice(0, 1);
     periodspan.className = period;
   }
 };

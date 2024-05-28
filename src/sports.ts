@@ -225,16 +225,13 @@ const writeSports = () => {
 
 const fetchAndWriteSports = async () => {
   const now = dayjs();
-  const sportsLastCheck = dayjs(Number(localStorage.getItem('sportsLastCheck')));
-  const checkFirstForToday = sportsLastCheck.isBefore(dayjs().startOf('day').add(1, 'hour'));
   const isNHLSeason = now.month() >= Month.October || now.month() <= Month.June;
   const isMLBSeason = now.month() >= Month.March && now.month() <= Month.November;
   // eslint-disable-next-line no-magic-numbers
-  const shouldUpdateMLBNow = now.hour() >= 12;
-  if (isNHLSeason && checkFirstForToday) {
+  if (isNHLSeason) {
     await fetchNHLGames();
   }
-  if (isMLBSeason && (checkFirstForToday || shouldUpdateMLBNow)) {
+  if (isMLBSeason) {
     await fetchMLBGames();
   }
   localStorage.setItem('sportsLastCheck', String(new Date().getTime()));

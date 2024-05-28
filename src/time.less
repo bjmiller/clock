@@ -1,15 +1,27 @@
 #time {
   align-self: center;
-  font-size: 120px;
+  font-size: 152px;
   margin: 10px 5px 20px 5px;
+  white-space: nowrap;
+  display: flex;
+}
+
+#time-current {
+  flex: 1 0;
 }
 
 #time-dayperiod {
   color: #888;
   font-variant: small-caps;
   font-size: 72px;
+  flex: 0 1;
+  position: relative;
 
   &.am {
     vertical-align: top;
+  }
+
+  &.pm {
+    top: 82px;
   }
 }
