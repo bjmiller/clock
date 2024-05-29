@@ -121,7 +121,9 @@ const filterMLBGames = (schedule: MLBSchedule) => {
 const fetchNHLGames = async () => {
   let response: Response;
   try {
-    response = await fetch('https://api-web.nhle.com/v1/schedule/now', { cache: 'no-cache' });
+    response = await fetch(`https://api-web.nhle.com/v1/schedule/${dayjs().format('YYYY-MM-DD')}`, {
+      cache: 'no-cache'
+    });
   } catch (error) {
     console.error(`fetchNHLGames: failed to fetch response - ${error}`);
     return null;
@@ -184,6 +186,13 @@ const renderGame = (game: GameLine) => {
   /* eslint-enable prettier/prettier */
 };
 
+const isNotOld = (game: GameLine) => {
+  const now = dayjs();
+  const gameTime = dayjs(dayjs(`${game.date} ${game.gameTime}`, 'YYYY-MM-DD h:mm A'));
+  // eslint-disable-next-line no-magic-numbers
+  return !(!gameTime.isToday() && now.isAfter(gameTime.add(4, 'hours')));
+};
+
 const getSports = () => {
   let nhlGameLines: GameLine[] = [];
   let mlbGameLines: GameLine[] = [];
@@ -198,7 +207,7 @@ const getSports = () => {
   } catch (e) {
     // Do nothing
   }
-  return [...nhlGameLines, ...mlbGameLines].sort((l, r) => {
+  return [...nhlGameLines, ...mlbGameLines].filter(isNotOld).sort((l, r) => {
     const ltime = dayjs(`${l.date} ${l.gameTime}`, 'YYYY-MM-DD h:mm A');
     const rtime = dayjs(`${r.date} ${r.gameTime}`, 'YYYY-MM-DD h:mm A');
     if (ltime.isBefore(rtime)) {
@@ -234,7 +243,6 @@ const fetchAndWriteSports = async () => {
   if (isMLBSeason) {
     await fetchMLBGames();
   }
-  localStorage.setItem('sportsLastCheck', String(new Date().getTime()));
   writeSports();
 };
 
