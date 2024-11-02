@@ -190,7 +190,7 @@ export interface MLBSchedule {
   totalEvents: number;
   totalGames: number;
   totalGamesInProgress: number;
-  dates: MLBDate[];
+  dates?: MLBDate[];
 }
 
 export interface MLBDate {
@@ -199,7 +199,7 @@ export interface MLBDate {
   totalEvents: number;
   totalGames: number;
   totalGamesInProgress: number;
-  games: MLBGame[];
+  games?: MLBGame[];
   events: unknown[];
 }
 

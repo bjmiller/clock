@@ -111,10 +111,12 @@ const filterNHLGames = (schedule: NHLDailySchedule) => {
 };
 
 const filterMLBGames = (schedule: MLBSchedule) => {
-  return schedule.dates[0].games.filter(
-    (game) =>
-      trackingMLBTeamAbbreviations.includes(game.teams.home.team.abbreviation) ||
-      trackingMLBTeamAbbreviations.includes(game.teams.away.team.abbreviation)
+  return (
+    schedule.dates?.[0]?.games?.filter(
+      (game) =>
+        trackingMLBTeamAbbreviations.includes(game.teams.home.team.abbreviation) ||
+        trackingMLBTeamAbbreviations.includes(game.teams.away.team.abbreviation)
+    ) ?? []
   );
 };
 
