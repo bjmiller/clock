@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 export interface GameLine {
-  league: 'NHL' | 'MLB';
+  league: 'NHL' | 'MLB' | 'PWHL';
   date: string;
   homeTeam: string;
   awayTeam: string;
@@ -393,4 +393,106 @@ export interface MLBTeamDetails {
 export interface MLBSpringVenue {
   id: number;
   link: string;
+}
+
+export interface PWHLSchedule {
+  SiteKit: PWHLSiteKit;
+}
+
+export interface PWHLSiteKit {
+  Parameters: PWHLParameters;
+  Schedule: PWHLGame[];
+  Copyright: PWHLCopyright;
+}
+
+export interface PWHLCopyright {
+  required_copyright: string;
+  required_link: string;
+  powered_by: string;
+  powered_by_url: string;
+}
+
+export interface PWHLParameters {
+  feed: string;
+  view: string;
+  key: string;
+  client_code: string;
+  lang: string;
+  season_id: number;
+  lang_id: number;
+  league_id: string;
+}
+
+export interface PWHLGame {
+  id: string;
+  game_id: string;
+  season_id: string;
+  quick_score: string;
+  date_played: string;
+  date: string;
+  date_with_day: string;
+  date_time_played: string;
+  GameDateISO8601: string;
+  home_team: string;
+  visiting_team: string;
+  home_goal_count: string;
+  visiting_goal_count: string;
+  period: string;
+  overtime: string;
+  schedule_time: string;
+  schedule_notes: string;
+  game_clock: string;
+  timezone: string;
+  game_number: string;
+  shootout: string;
+  attendance: string;
+  status: string;
+  location: string;
+  game_status: string;
+  intermission: string;
+  game_type: string;
+  game_letter: string;
+  if_necessary: string;
+  period_trans: string;
+  started: string;
+  final: string;
+  tickets_url: string;
+  home_audio_url: string;
+  visiting_audio_url: string;
+  home_team_name: string;
+  home_team_code: string;
+  home_team_nickname: string;
+  home_team_city: string;
+  home_team_division_long: string;
+  home_team_division_short: string;
+  visiting_team_name: string;
+  visiting_team_code: string;
+  visiting_team_nickname: string;
+  visiting_team_city: string;
+  visiting_team_division_long: string;
+  visiting_team_division_short: string;
+  notes_text: string;
+  use_shootouts: string;
+  venue_name: string;
+  venue_url: string;
+  venue_location: string;
+  last_modified: string;
+  flo_core_event_id: string;
+  flo_live_event_id: string;
+  htv_game_id: string;
+  client_code: string;
+  scheduled_time: string;
+  broadcasters: PWHLBroadcasters;
+  mobile_calendar: string;
+}
+
+export interface PWHLBroadcasters {
+  home_video?: PWHLHomeVideo[];
+}
+
+export interface PWHLHomeVideo {
+  broadcaster_id: string;
+  name: string;
+  logo_url: string;
+  url: string;
 }
