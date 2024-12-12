@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import { watchFile, StatsListener } from 'node:original-fs';
+import * as os from 'node:os';
 
 const width = 1280;
 const height = 400;
@@ -8,7 +9,7 @@ const createWindow = () => {
   const win = new BrowserWindow({
     width,
     height,
-    fullscreen: true,
+    fullscreen: os.release().includes('rpi') ? true : false,
     frame: false
   });
 
