@@ -4,6 +4,9 @@
   margin: 10px 5px 20px 5px;
   white-space: nowrap;
   display: flex;
+  flex-direction: column;
+  height: 99%;
+  justify-content: space-evenly;
 }
 
 #time-current {
@@ -15,23 +18,16 @@
   font-variant: small-caps;
   font-size: 72px;
   flex: 0 1;
-  position: relative;
 
   &.am {
     vertical-align: top;
   }
 
-  &.pm {
-    top: 82px;
-  }
 }
 
 #time-cal {
-  position: absolute;
-  bottom: 0;
-  color: #888;
-  font-size: 40px;
+  color: #aaa;
+  font-size: 64px;
   display: flex;
-  justify-content: space-between;
-  width: 33%;
+  justify-content: space-evenly;
 }
