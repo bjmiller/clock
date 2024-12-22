@@ -487,10 +487,11 @@ export interface PWHLGame {
 }
 
 export interface PWHLBroadcasters {
-  home_video?: PWHLHomeVideo[];
+  home_video?: PWHLVideo[];
+  visiting_video?: PWHLVideo[];
 }
 
-export interface PWHLHomeVideo {
+export interface PWHLVideo {
   broadcaster_id: string;
   name: string;
   logo_url: string;

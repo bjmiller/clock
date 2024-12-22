@@ -18,7 +18,7 @@ import {
   Month,
   PWHLGame,
   PWHLSchedule,
-  PWHLHomeVideo
+  PWHLVideo
 } from './sportsTypes';
 
 dayjs.extend(utc);
@@ -60,7 +60,7 @@ const formatMLBNetworks = (broadcasts: MLBBroadcast[], market: MLBMarket) => {
     .map((tv) => tv.name);
 };
 
-const formatPWHLNetworks = (broadcasts: PWHLHomeVideo[]) => {
+const formatPWHLNetworks = (broadcasts: PWHLVideo[]) => {
   // This is hacky, but they don't tell us much more about the broadcaster than the name.
   return broadcasts
     .filter((b) => b.name.toLowerCase().includes('msg') || b.name.toLowerCase().includes('prime'))
@@ -130,7 +130,10 @@ const toGameLine = (game: NHLGame | MLBGame | PWHLGame) => {
       awayTeam: game.visiting_team_code,
       gameState: game.game_status,
       gameTime: dayjs.utc(game.GameDateISO8601).local().format('h:mm A'),
-      networks: formatPWHLNetworks(game.broadcasters.home_video ?? []),
+      networks: formatPWHLNetworks([
+        ...(game.broadcasters.home_video ?? []),
+        ...(game.broadcasters.visiting_video ?? [])
+      ]),
       homeScore: Number(game.home_goal_count),
       awayScore: Number(game.visiting_goal_count)
     };
