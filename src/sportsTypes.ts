@@ -488,6 +488,8 @@ export interface PWHLGame {
 
 export interface PWHLBroadcasters {
   home_video?: PWHLVideo[];
+  home_video_fr?: PWHLVideo[];
+  home_webcast?: PWHLVideo[];
   visiting_video?: PWHLVideo[];
 }
 

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { Weather } from './weatherTypes';
+import { session } from 'electron';
 
 dayjs.extend(duration);
 
@@ -10,17 +11,6 @@ const numberOfIcons = 48;
 for (let i = 0; i < numberOfIcons; i++) {
   icons[i] = require(`./icons/${i}`);
 }
-
-const unescapeHtml = (text: string) => {
-  const unescapedText: { [k: string]: string } = {
-    '&a;': '&',
-    '&q;': '"',
-    '&s;': "'",
-    '&l;': '<',
-    '&g;': '>'
-  };
-  return text.replace(/&[^;]+;/g, (s) => unescapedText[s]);
-};
 
 const fetchWxApiKey = async () => {
   const wxUrl = 'https://www.wunderground.com/';
@@ -38,17 +28,18 @@ const fetchWxApiKey = async () => {
     console.error('fetchWxApiKey: no appRootStateScript');
     return null;
   }
-  const appRootStateText = unescapeHtml(appRootStateScript.innerText);
+  const appRootStateText = appRootStateScript.innerText;
   let appRootState: { 'process.env': { [k: string]: string } };
   try {
     appRootState = JSON.parse(appRootStateText);
   } catch (error) {
     console.error('fetchWxApiKey: Could not parse appRootState as JSON');
+    console.error('APPROOTSTATE', appRootStateText);
     return null;
   }
   let wxApiKey: string;
   try {
-    wxApiKey = appRootState['process.env'].SUN_API_KEY;
+    wxApiKey = appRootState['process.env']?.SUN_API_KEY;
   } catch (error) {
     console.error('fetchWxApiKey: Could not read SUN_API_KEY');
     return null;
@@ -56,12 +47,12 @@ const fetchWxApiKey = async () => {
   if (wxApiKey == null) {
     console.error('fetchWxApiKey: SUN_API_KEY is null/undefined');
   }
-  localStorage.setItem('wxApiKey', wxApiKey);
+  sessionStorage.setItem('wxApiKey', wxApiKey);
   return wxApiKey;
 };
 
 const getWxApiKey = async () => {
-  const wxApiKey = localStorage.getItem('wxApiKey');
+  const wxApiKey = sessionStorage.getItem('wxApiKey');
   if (wxApiKey != null) {
     return wxApiKey;
   }

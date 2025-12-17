@@ -132,6 +132,8 @@ const toGameLine = (game: NHLGame | MLBGame | PWHLGame) => {
       gameTime: dayjs.utc(game.GameDateISO8601).local().format('h:mm A'),
       networks: formatPWHLNetworks([
         ...(game.broadcasters.home_video ?? []),
+        ...(game.broadcasters.home_video_fr ?? []),
+        ...(game.broadcasters.home_webcast ?? []),
         ...(game.broadcasters.visiting_video ?? [])
       ]),
       homeScore: Number(game.home_goal_count),
@@ -244,8 +246,12 @@ const renderGame = (game: GameLine) => {
     <tbody class="${game.league.toLowerCase()}">
       <tr class="sports-top-line">
         <td class="sports-teams" colspan="2">
-          <span class="team ${game.league.toLowerCase()} ${game.homeTeam.toLowerCase()}">${game.homeTeam}</span> - <span class="team ${game.league.toLowerCase()} ${game.awayTeam.toLowerCase()}">
+          <span class="team ${game.league.toLowerCase()} ${game.awayTeam.toLowerCase()}">
             ${game.awayTeam}
+          </span>
+          - 
+          <span class="team ${game.league.toLowerCase()} ${game.homeTeam.toLowerCase()}">
+            ${game.homeTeam}
           </span>
         </td>
       </tr>
