@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import { watchFile, StatsListener } from 'node:original-fs';
+import { watchFile, type StatsListener } from 'node:original-fs';
 import * as os from 'node:os';
 
 const width = 1280;
@@ -13,12 +13,12 @@ const createWindow = () => {
     frame: false
   });
 
-  win.loadFile(`${__dirname}/index.html`);
+  void win.loadFile(`${__dirname}/index.html`);
   win.focus();
   return win;
 };
 
-app.whenReady().then(() => {
+void app.whenReady().then(() => {
   const win = createWindow();
 
   const debouncePeriod = 750;

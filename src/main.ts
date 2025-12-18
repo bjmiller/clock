@@ -8,6 +8,6 @@ import { sports } from './sports';
 
 document.addEventListener('DOMContentLoaded', () => {
   time();
-  weather();
-  sports();
+  void weather();
+  void sports();
 });

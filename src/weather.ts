@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { Weather } from './weatherTypes';
-import { session } from 'electron';
+import { type Weather } from './weatherTypes';
 
 dayjs.extend(duration);
 
@@ -9,6 +8,7 @@ const icons: string[] = [];
 
 const numberOfIcons = 48;
 for (let i = 0; i < numberOfIcons; i++) {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-unsafe-assignment
   icons[i] = require(`./icons/${i}`);
 }
 
@@ -20,34 +20,41 @@ const fetchWxApiKey = async () => {
   try {
     wxDoc = parser.parseFromString(html, 'text/html');
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: DOMParser could not parse response');
     return null;
   }
   const appRootStateScript = wxDoc.getElementById('app-root-state');
   if (appRootStateScript == null) {
+    // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: no appRootStateScript');
     return null;
   }
   const appRootStateText = appRootStateScript.innerText;
-  let appRootState: { 'process.env': { [k: string]: string } };
+  let appRootState: { 'process.env': Record<string, string> };
   try {
-    appRootState = JSON.parse(appRootStateText);
+    appRootState = JSON.parse(appRootStateText) as typeof appRootState;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: Could not parse appRootState as JSON');
+    // eslint-disable-next-line no-console
     console.error('APPROOTSTATE', appRootStateText);
     return null;
   }
-  let wxApiKey: string;
+  let wxApiKey: string | undefined;
   try {
     wxApiKey = appRootState['process.env']?.SUN_API_KEY;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: Could not read SUN_API_KEY');
     return null;
   }
   if (wxApiKey == null) {
+    // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: SUN_API_KEY is null/undefined');
+  } else {
+    sessionStorage.setItem('wxApiKey', wxApiKey);
   }
-  sessionStorage.setItem('wxApiKey', wxApiKey);
   return wxApiKey;
 };
 
@@ -62,6 +69,7 @@ const getWxApiKey = async () => {
 const fetchWeather = async () => {
   const wxApiKey = await getWxApiKey();
   if (wxApiKey == null) {
+    // eslint-disable-next-line no-console
     console.error('fetchWeather: No Wx API key!');
     return null;
   }
@@ -71,7 +79,8 @@ const fetchWeather = async () => {
   try {
     wxResponse = await fetch(calcWxApiUrl(wxApiKey));
   } catch (error) {
-    console.error(`fetchWeather: Failed to fetch - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchWeather: Failed to fetch - ${error as Error}`);
     return null;
   }
   let cacheControlMaxAge = 0;
@@ -81,9 +90,10 @@ const fetchWeather = async () => {
   }
   let wxResponseJson: [Weather] | null = null;
   try {
-    wxResponseJson = await wxResponse.json();
+    wxResponseJson = (await wxResponse.json()) as [Weather];
   } catch (error) {
-    console.error(`fetchWeather: failed to extract JSON from response body - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchWeather: failed to extract JSON from response body - ${error as Error}`);
   }
   if (wxResponseJson != null) {
     localStorage.setItem('lastWeatherReport', JSON.stringify(wxResponseJson));
@@ -97,7 +107,8 @@ const fetchWeather = async () => {
 const getWeather = async () => {
   // Get last expiration time to see if we should show the last weather report or nothing if the request fails.
   const previousWeatherText = localStorage.getItem('lastWeatherReport');
-  const previousWeather: [Weather] | null = previousWeatherText == null ? null : JSON.parse(previousWeatherText);
+  const previousWeather: [Weather] | null =
+    previousWeatherText == null ? null : (JSON.parse(previousWeatherText) as [Weather]);
   const previousObservationExpiratonTime = previousWeather?.[0]?.['v3-wx-observations-current'].expirationTimeUtc;
   let previousObservationExpiraton: dayjs.Dayjs | null = null;
   if (previousObservationExpiratonTime != null) {
@@ -152,20 +163,20 @@ const writeWeather = (wx: Weather | null | undefined) => {
 
     const daypart = wx['v3-wx-forecast-daily-10day'].daypart[0];
     // eslint-disable-next-line no-magic-numbers
-    const forecastDaypartIndices = daypart.temperature[0] == null ? [1, 2, 3] : [0, 1, 2];
+    const forecastDaypartIndices = daypart?.temperature[0] == null ? [1, 2, 3] : [0, 1, 2];
     const forecastHtml = forecastDaypartIndices.map((index) => {
-      const daypartName = daypart.daypartName[index];
-      const temperature = daypart.temperature[index];
-      const iconCode = daypart.iconCode[index];
-      const wxPhraseShort = daypart.wxPhraseShort[index];
-      const snowRange = daypart.snowRange[index];
-      const tempPhrase = daypart.dayOrNight[index] === 'D' ? 'High' : 'Low';
+      const daypartName = daypart?.daypartName[index];
+      const temperature = daypart?.temperature[index];
+      const iconCode = daypart?.iconCode[index];
+      const wxPhraseShort = daypart?.wxPhraseShort[index];
+      const snowRange = daypart?.snowRange[index];
+      const tempPhrase = daypart?.dayOrNight[index] === 'D' ? 'High' : 'Low';
 
       const snowHtml = ` <span class="wx-forecast-snow">${snowRange}</span>`;
       return `
       <div class="wx-forecast-day">
         <div class="wx-forecast-name">${daypartName === 'Tomorrow night' ? 'Tom. night' : daypartName}</div>
-        <div class="wx-forecast-icon"><img src="${icons[iconCode]}" /></div>
+        <div class="wx-forecast-icon"><img src="${icons[iconCode ?? 0]}" /></div>
         <div class="wx-forecast-phrase">${wxPhraseShort} </div>
         <div class="wx-forecast-temp">${tempPhrase} ${temperature}&deg;${snowRange !== '' ? snowHtml : ''}</div>
       </div>
@@ -192,5 +203,6 @@ export const weather = async () => {
   await fetchAndWriteWeather();
   const minutes = 15;
   const delayMs = dayjs.duration({ minutes }).asMilliseconds();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   setInterval(fetchAndWriteWeather, delayMs);
 };

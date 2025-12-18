@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 export interface GameLine {
   league: 'NHL' | 'MLB' | 'PWHL';
   date: string;

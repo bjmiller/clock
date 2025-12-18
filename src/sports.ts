@@ -5,20 +5,21 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import isToday from 'dayjs/plugin/isToday';
 
 import {
-  NHLDailySchedule,
-  GameLine,
-  NHLGame,
-  NHLTvBroadcast,
+  type NHLDailySchedule,
+  type GameLine,
+  type NHLGame,
+  type NHLTvBroadcast,
   NHLMarket,
-  MLBGame,
+  type MLBGame,
   MLBMarket,
-  MLBBroadcast,
+  type MLBBroadcast,
   MLBBroadcastType,
-  MLBSchedule,
+  type MLBSchedule,
   Month,
-  PWHLGame,
-  PWHLSchedule,
-  PWHLVideo
+  type PWHLGame,
+  type PWHLSchedule,
+  type PWHLVideo,
+  NHLCountryCode
 } from './sportsTypes';
 
 dayjs.extend(utc);
@@ -32,7 +33,10 @@ const trackingPWHLTeamAbbreviations = ['NY'];
 
 const formatNhlTvNetworks = (broadcasts: NHLTvBroadcast[], market: NHLMarket) => {
   return broadcasts
-    .filter((tv) => tv.countryCode === 'US' && (tv.market === market || tv.market === NHLMarket.Neutral))
+    .filter(
+      (tv) =>
+        tv.countryCode === NHLCountryCode.UnitedStates && (tv.market === market || tv.market === NHLMarket.Neutral)
+    )
     .sort((l, r) => {
       if (l.market === NHLMarket.Neutral && r.market !== NHLMarket.Neutral) {
         return 1;
@@ -104,8 +108,8 @@ const toGameLine = (game: NHLGame | MLBGame | PWHLGame) => {
       gameState: game.gameState,
       gameTime: dayjs.utc(game.startTimeUTC).local().format('h:mm A'),
       networks: formatNhlTvNetworks(game.tvBroadcasts, trackingMarket),
-      awayScore: game.awayTeam.score || null,
-      homeScore: game.homeTeam.score || null
+      awayScore: game.awayTeam.score ?? null,
+      homeScore: game.homeTeam.score ?? null
     };
   } else if (isMLBGame(game)) {
     const trackingMarket = trackingMLBTeamAbbreviations.includes(game.teams.home.team.abbreviation)
@@ -119,8 +123,8 @@ const toGameLine = (game: NHLGame | MLBGame | PWHLGame) => {
       gameState: game.status.abstractGameCode,
       gameTime: dayjs.utc(game.gameDate).local().format('h:mm A'),
       networks: formatMLBNetworks(game.broadcasts, trackingMarket),
-      homeScore: game.teams.home.score || null,
-      awayScore: game.teams.away.score || null
+      homeScore: game.teams.home.score ?? null,
+      awayScore: game.teams.away.score ?? null
     };
   } else {
     gameLine = {
@@ -143,15 +147,19 @@ const toGameLine = (game: NHLGame | MLBGame | PWHLGame) => {
   return gameLine;
 };
 
-const filterNHLGames = (schedule: NHLDailySchedule) => {
-  return schedule.gameWeek[0].games.filter(
-    (game) =>
-      trackingNHLTeamAbbreviations.includes(game.homeTeam.abbrev) ||
-      trackingNHLTeamAbbreviations.includes(game.awayTeam.abbrev)
+const filterNHLGames = (schedule: NHLDailySchedule | undefined) => {
+  if (schedule == null) return [];
+  return (
+    schedule.gameWeek[0]?.games.filter(
+      (game) =>
+        trackingNHLTeamAbbreviations.includes(game.homeTeam.abbrev) ||
+        trackingNHLTeamAbbreviations.includes(game.awayTeam.abbrev)
+    ) ?? []
   );
 };
 
-const filterMLBGames = (schedule: MLBSchedule) => {
+const filterMLBGames = (schedule: MLBSchedule | undefined) => {
+  if (schedule == null) return [];
   return (
     schedule.dates?.[0]?.games?.filter(
       (game) =>
@@ -161,7 +169,8 @@ const filterMLBGames = (schedule: MLBSchedule) => {
   );
 };
 
-const filterPWHLGames = (schedule: PWHLSchedule) => {
+const filterPWHLGames = (schedule: PWHLSchedule | undefined) => {
+  if (schedule == null) return [];
   return (
     schedule?.SiteKit?.Schedule?.filter(
       (game) =>
@@ -179,14 +188,16 @@ const fetchNHLGames = async () => {
       cache: 'no-cache'
     });
   } catch (error) {
-    console.error(`fetchNHLGames: failed to fetch response - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchNHLGames: failed to fetch response - ${error as Error}`);
     return null;
   }
-  let schedule: NHLDailySchedule;
+  let schedule: NHLDailySchedule | undefined;
   try {
-    schedule = await response.json();
+    schedule = (await response.json()) as NHLDailySchedule | undefined;
   } catch (error) {
-    console.error(`fetchNHLGames: failed to extract JSON from response body - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchNHLGames: failed to extract JSON from response body - ${error as Error}`);
     return null;
   }
   const gameLines = filterNHLGames(schedule).map(toGameLine);
@@ -201,14 +212,16 @@ const fetchMLBGames = async () => {
       cache: 'no-cache'
     });
   } catch (error) {
-    console.error(`fetchMLBGames: failed to fetch response - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchMLBGames: failed to fetch response - ${error as Error}`);
     return null;
   }
-  let schedule: MLBSchedule;
+  let schedule: MLBSchedule | undefined;
   try {
-    schedule = await response.json();
+    schedule = (await response.json()) as MLBSchedule | undefined;
   } catch (error) {
-    console.error(`fetchMLBGames: failed to extract JSON from response body - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchMLBGames: failed to extract JSON from response body - ${error as Error}`);
     return null;
   }
   const gameLines = filterMLBGames(schedule).map(toGameLine);
@@ -225,14 +238,16 @@ const fetchPWHLGames = async () => {
       `https://lscluster.hockeytech.com/feed/index.php?feed=modulekit&view=schedule&key=${pwhlKey}&client_code=pwhl&lang=en`
     );
   } catch (error) {
-    console.error(`fetchPWHLGames: failed to fetch response - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchPWHLGames: failed to fetch response - ${error as Error}`);
     return null;
   }
-  let schedule: PWHLSchedule;
+  let schedule: PWHLSchedule | undefined;
   try {
-    schedule = await response.json();
+    schedule = (await response.json()) as PWHLSchedule | undefined;
   } catch (error) {
-    console.error(`fetchPWHLGames: failed to extract JSON from response body - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`fetchPWHLGames: failed to extract JSON from response body - ${error as Error}`);
     return null;
   }
   const gameLines = filterPWHLGames(schedule).map(toGameLine);
@@ -241,7 +256,6 @@ const fetchPWHLGames = async () => {
 };
 
 const renderGame = (game: GameLine) => {
-  /* eslint-disable prettier/prettier */
   return `
     <tbody class="${game.league.toLowerCase()}">
       <tr class="sports-top-line">
@@ -261,7 +275,6 @@ const renderGame = (game: GameLine) => {
       </tr>
     </tbody>
   `;
-  /* eslint-enable prettier/prettier */
 };
 
 const isNotOld = (game: GameLine) => {
@@ -277,17 +290,17 @@ const getSports = () => {
   let pwhlGameLines: GameLine[] = [];
 
   try {
-    nhlGameLines = JSON.parse(localStorage.getItem('todaysNHLGameLines') ?? '[]');
+    nhlGameLines = JSON.parse(localStorage.getItem('todaysNHLGameLines') ?? '[]') as GameLine[];
   } catch (e) {
     // Do nothing
   }
   try {
-    mlbGameLines = JSON.parse(localStorage.getItem('todaysMLBGameLines') ?? '[]');
+    mlbGameLines = JSON.parse(localStorage.getItem('todaysMLBGameLines') ?? '[]') as GameLine[];
   } catch (e) {
     // Do nothing
   }
   try {
-    pwhlGameLines = JSON.parse(localStorage.getItem('todaysPWHLGameLines') ?? '[]');
+    pwhlGameLines = JSON.parse(localStorage.getItem('todaysPWHLGameLines') ?? '[]') as GameLine[];
   } catch (e) {
     // Do nothing
   }
@@ -312,16 +325,19 @@ const writeSports = () => {
       table.innerHTML = lines.map(renderGame).join('');
     }
   } catch (error) {
-    console.error(`writeSports: Unable to get sports data - ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`writeSports: Unable to get sports data - ${error as Error}`);
   }
 };
 
 const fetchAndWriteSports = async () => {
   const now = dayjs();
+  /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
   const isNHLSeason = now.month() >= Month.October || now.month() <= Month.June;
   const isMLBSeason = now.month() >= Month.March && now.month() <= Month.November;
   const isPWHLSeason = now.month() >= Month.November || now.month() <= Month.May;
-  // eslint-disable-next-line no-magic-numbers
+  /* eslint-enable @typescript-eslint/no-unsafe-enum-comparison */
+
   if (isNHLSeason) {
     await fetchNHLGames();
   }
@@ -338,5 +354,6 @@ export const sports = async () => {
   await fetchAndWriteSports();
   const minutes = 15;
   const delayMs = dayjs.duration({ minutes }).asMilliseconds();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   setInterval(fetchAndWriteSports, delayMs);
 };

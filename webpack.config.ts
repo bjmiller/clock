@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import webpack from 'webpack';
+import type webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import HtmlInlineScriptPlugin from 'html-inline-script-webpack-plugin';
 import HtmlInlineCssPlugin from 'html-inline-css-webpack-plugin';
