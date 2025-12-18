@@ -246,13 +246,9 @@ const renderGame = (game: GameLine) => {
     <tbody class="${game.league.toLowerCase()}">
       <tr class="sports-top-line">
         <td class="sports-teams" colspan="2">
-          <span class="team ${game.league.toLowerCase()} ${game.awayTeam.toLowerCase()}">
-            ${game.awayTeam}
-          </span>
+          <span class="team ${game.league.toLowerCase()} ${game.awayTeam.toLowerCase()}">${game.awayTeam}</span>
           - 
-          <span class="team ${game.league.toLowerCase()} ${game.homeTeam.toLowerCase()}">
-            ${game.homeTeam}
-          </span>
+          <span class="team ${game.league.toLowerCase()} ${game.homeTeam.toLowerCase()}">${game.homeTeam}</span>
         </td>
       </tr>
       <tr class="sports-bottom-line">
