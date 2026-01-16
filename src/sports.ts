@@ -70,10 +70,10 @@ const formatPWHLNetworks = (broadcasts: PWHLVideo[]) => {
     .filter((b) => b.name.toLowerCase().includes('msg') || b.name.toLowerCase().includes('prime'))
     .sort((l, r) => {
       if (l.name.toLowerCase().includes('msg') && !r.name.toLowerCase().includes('msg')) {
-        return 1;
+        return -1;
       }
       if (!l.name.toLowerCase().includes('msg') && r.name.toLowerCase().includes('msg')) {
-        return -1;
+        return 1;
       }
       return 0;
     })
