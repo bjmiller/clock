@@ -2,8 +2,9 @@ import { resolve } from 'node:path';
 import type webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import HtmlInlineScriptPlugin from 'html-inline-script-webpack-plugin';
-import HtmlInlineCssPlugin from 'html-inline-css-webpack-plugin';
+import HtmlInlineCssPlugin from 'html-inline-css-webpack-plugin/build/core/v4.js';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import Dotenv from 'dotenv-webpack';
 
 const aggregateTimeout = 200;
 
@@ -20,12 +21,13 @@ const bootConfig: webpack.Configuration = {
     ]
   },
   output: {
-    path: resolve(__dirname, 'dist'),
+    path: resolve('dist'),
     filename: 'index.js'
   },
   optimization: {
     minimize: false
   },
+  plugins: [new Dotenv()],
   watch: true,
   watchOptions: {
     aggregateTimeout
@@ -36,6 +38,7 @@ const pageConfig: webpack.Configuration = {
   mode: 'production',
   target: 'electron-renderer',
   entry: './src/main.ts',
+  externalsPresets: { node: false },
   module: {
     rules: [
       {
@@ -54,9 +57,14 @@ const pageConfig: webpack.Configuration = {
       }
     ]
   },
-  resolve: { extensions: ['', '.ts', '.js', '.svg', '...'] },
+  resolve: {
+    alias: {
+      rollbar$: resolve('node_modules/rollbar/dist/rollbar.umd.js')
+    },
+    extensions: ['', '.ts', '.js', '.svg', '...']
+  },
   output: {
-    path: resolve(__dirname, 'dist'),
+    path: resolve('dist'),
     filename: 'main.js'
   },
   optimization: {
@@ -72,7 +80,8 @@ const pageConfig: webpack.Configuration = {
       cache: false
     }),
     new HtmlInlineScriptPlugin(),
-    new HtmlInlineCssPlugin({ leaveCSSFile: false })
+    new HtmlInlineCssPlugin.PluginForHtmlWebpackPluginV4({ leaveCSSFile: false }),
+    new Dotenv()
   ],
   watch: true,
   watchOptions: {

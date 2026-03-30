@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "ES6",
+    "target": "es2015",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "module": "CommonJS",
+    "module": "preserve",
     "strict": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "checkJs": true,
     "lib": [
       "dom",
