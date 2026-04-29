@@ -161,7 +161,7 @@ const writeWeather = (wx: Weather | null | undefined) => {
       currentDescriptionElement.innerHTML = currentDescription;
     }
 
-    const daypart = wx['v3-wx-forecast-daily-10day'].daypart[0];
+    const daypart = wx['v3-wx-forecast-daily-10day'].daypart?.[0];
     // eslint-disable-next-line no-magic-numbers
     const forecastDaypartIndices = daypart?.temperature[0] == null ? [1, 2, 3] : [0, 1, 2];
     const forecastHtml = forecastDaypartIndices.map((index) => {
