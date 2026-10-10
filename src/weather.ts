@@ -12,9 +12,11 @@ for (let i = 0; i < numberOfIcons; i++) {
   icons[i] = require(`./icons/${i}`);
 }
 
-const fetchWxApiKey = async () => {
-  const wxUrl = 'https://www.wunderground.com/';
-  const html = await fetch(wxUrl).then((res) => res.text());
+// The redesigned site serves the key in an inline script that assigns API_KEY to globalThis.
+// The legacy site ships it inside a #app-root-state JSON blob as SUN_API_KEY.
+const WX_API_KEY_PATTERN = /"(?:SUN_)?API_KEY"\s*:\s*"([^"]+)"/;
+
+const readLegacyAppRootStateKey = (html: string) => {
   const parser = new DOMParser();
   let wxDoc: Document;
   try {
@@ -26,8 +28,6 @@ const fetchWxApiKey = async () => {
   }
   const appRootStateScript = wxDoc.getElementById('app-root-state');
   if (appRootStateScript == null) {
-    // eslint-disable-next-line no-console
-    console.error('fetchWxApiKey: no appRootStateScript');
     return null;
   }
   const appRootStateText = appRootStateScript.innerText;
@@ -37,24 +37,21 @@ const fetchWxApiKey = async () => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('fetchWxApiKey: Could not parse appRootState as JSON');
-    // eslint-disable-next-line no-console
-    console.error('APPROOTSTATE', appRootStateText);
     return null;
   }
-  let wxApiKey: string | undefined;
-  try {
-    wxApiKey = appRootState['process.env']?.SUN_API_KEY;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('fetchWxApiKey: Could not read SUN_API_KEY');
-    return null;
-  }
+  return appRootState['process.env']?.SUN_API_KEY ?? null;
+};
+
+const fetchWxApiKey = async () => {
+  const wxUrl = 'https://www.wunderground.com/';
+  const html = await fetch(wxUrl).then((res) => res.text());
+  const wxApiKey = WX_API_KEY_PATTERN.exec(html)?.[1] ?? readLegacyAppRootStateKey(html);
   if (wxApiKey == null) {
     // eslint-disable-next-line no-console
-    console.error('fetchWxApiKey: SUN_API_KEY is null/undefined');
-  } else {
-    sessionStorage.setItem('wxApiKey', wxApiKey);
+    console.error('fetchWxApiKey: no API key found in response');
+    return null;
   }
+  sessionStorage.setItem('wxApiKey', wxApiKey);
   return wxApiKey;
 };
 
